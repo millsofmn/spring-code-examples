@@ -1,4 +1,4 @@
-package org.millsofmn.example.rest.restexample;
+package org.millsofmn.example.rest;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
