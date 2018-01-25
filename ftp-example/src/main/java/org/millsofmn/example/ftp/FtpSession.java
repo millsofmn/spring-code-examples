@@ -21,6 +21,10 @@ public class FtpSession {
         }
     }
 
+    public void uploadFile(InputStream file, String fileName, String hostDir) throws IOException {
+        this.client.storeFile(hostDir + fileName, file);
+    }
+
     public void disconnect(){
         if(this.client.isConnected()){
             try {
