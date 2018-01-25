@@ -25,4 +25,8 @@ public class RestClient {
 
         return containers.getContainer().get(0);
     }
+
+    public RestTemplate getRestTemplate() {
+        return restTemplate;
+    }
 }
