@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FtpSession {
 
@@ -19,6 +21,17 @@ public class FtpSession {
         try (InputStream input = new FileInputStream(new File(localFileFullName))) {
             this.client.storeFile(hostDir + fileName, input);
         }
+    }
+
+    public void setWorkingDirectory(String path) throws IOException {
+        Pattern p = Pattern.compile("^[/|\\\\]*");
+        Matcher m = p.matcher(path);
+
+        // just make sure that there aren't leading slashes
+        if(m.find()){
+            path = p.matcher(path).replaceAll("");
+        }
+        this.client.changeWorkingDirectory(path);
     }
 
     public void uploadFile(InputStream file, String fileName, String hostDir) throws IOException {
