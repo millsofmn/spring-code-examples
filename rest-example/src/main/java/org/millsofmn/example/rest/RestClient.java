@@ -17,7 +17,7 @@ public class RestClient {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("id", id);
 
-        Containers containers = restTemplate.getForObject(
+    Containers containers = restTemplate.getForObject(
                 "/containers?name={id}",
                 Containers.class,
                 parameters
