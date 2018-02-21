@@ -18,6 +18,8 @@ public class CsvExampleApplication {
 
         CSVPrinter csvPrinter = new CSVPrinter(new StringBuilder(), CSVFormat.RFC4180);
 
+
+
         for(int i = 0; i < 100; i++){
             List<String> record = new ArrayList<>();
             record.add(RandomStringUtils.randomAlphanumeric(16));
@@ -30,7 +32,7 @@ public class CsvExampleApplication {
         }
 
 
-        String result = ((StringBuilder)csvPrinter.getOut()).toString();
+        String result = csvPrinter.getOut().toString();
         System.out.println(result);
     }
 }
