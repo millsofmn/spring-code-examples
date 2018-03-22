@@ -1,0 +1,5 @@
+jsch:
+  username: ${username}
+  password: ${password}
+  host: ${host}
+  port: ${port}
