@@ -11,7 +11,7 @@ public class JschSessionFactory {
     private String username;
     private String password;
     private String host;
-    private String port;
+    private int port;
 
     public String getUsername() {
         return username;
@@ -37,16 +37,20 @@ public class JschSessionFactory {
         this.host = host;
     }
 
-    public String getPort() {
+    public Integer getPort() {
         return port;
     }
 
-    public void setPort(String port) {
+    public void setPort(Integer port) {
         this.port = port;
     }
 
     public JschSession getSession() throws Exception {
         return new JschSession(this.createClient());
+    }
+
+    public JschFileTemplate getFileTemplate() throws Exception {
+        return new JschFileTemplate(this.createClient());
     }
 
     private Session createClient() throws Exception {

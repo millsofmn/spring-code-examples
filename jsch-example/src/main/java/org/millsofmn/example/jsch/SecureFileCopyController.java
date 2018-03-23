@@ -29,7 +29,7 @@ public class SecureFileCopyController {
 
             StringBuilder sb = new StringBuilder();
 
-            File myFile = session.getFile(fileName1, "eporting.bed");
+            File myFile = session.getFile(fileName1, "reporting.bed");
             try(BufferedReader br = new BufferedReader(new FileReader(myFile))){
 
                 String currentLine = null;

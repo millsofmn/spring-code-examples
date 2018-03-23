@@ -3,11 +3,20 @@ package org.millsofmn.example.jsch;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.Session;
+import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 
 public class JschSession implements AutoCloseable {
 
+    public static void main(String[] args) throws Exception {
+        JschSessionFactory factory = new JschSessionFactory();
+        JschSession session = factory.getSession();
+
+        session.getFile("/reporting.bed", "MyFile.bed");
+        System.out.println("yes");
+        System.exit(0);
+    }
     /**
      * Jsch Session
      */
@@ -57,57 +66,96 @@ public class JschSession implements AutoCloseable {
                 break;
             }
 
-            readFilePermissions(in);
+            Integer size = Integer.valueOf(readFileHeader(in));
 
-            Long fileSize = readFileSize(in);
-
-            String fileName = readFileName(in);
-
-            System.out.println("fileSize = " + fileSize + ", fileName = " + fileName);
-
+//            readFilePermissions(in);
+//
+//            Long fileSize = readFileSize(in);
+//
+//            String fileName = readFileName(in);
+//
+//            System.out.println("fileSize = " + fileSize + ", fileName = " + fileName);
+//
             flushOutputStream(out);
-
-            outFile = readFileInFromStream(in, saveAs, fileSize);
-
+//
+            outFile = readFileInFromStream(in, saveAs, size);
+//
+            System.out.println("out");
             if (checkAck(in) != 0) {
                 System.exit(0);
             }
-
+//
             flushOutputStream(out);
         }
 
         return outFile;
     }
 
-    private File readFileInFromStream(InputStream in, String saveAs, Long fileSize) throws IOException {
-        byte[] buf = new byte[1024];
+    private String readFileHeader(InputStream inputStream) throws IOException {
+        String head = readLine(inputStream);
+        System.out.println("head=" + head);
 
-        File outFile = File.createTempFile(saveAs, ".tmp");
-        outFile.deleteOnExit();
+        String[] header = head.split(" ");
 
+        return header[1];
+    }
+
+    private String readLine(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        while(true) {
+            int c = inputStream.read();
+            if (c == '\n') {
+                return baos.toString();
+            } else if (c == -1) {
+                throw new IOException("End of stream");
+            } else {
+                baos.write(c);
+            }
+        }
+    }
+    private File readFileInFromStream(InputStream in, String saveAs, Integer fileSize) throws IOException {
+//        byte[] buffer = new byte[fileSize];
+//        in.read(buffer, 0, buffer.length);
+
+
+//        System.out.println("Buf=" + new String(buffer, "UTF-8"));
+
+
+
+//        byte[] buf = new byte[1024];
+//
+        File outFile = new File(saveAs);
+//        File outFile = File.createTempFile(saveAs, ".tmp");
+//        outFile.deleteOnExit();
+//
         FileOutputStream fos = new FileOutputStream(outFile);
 
-        int foo;
 
-        while (true) {
-            if (buf.length < fileSize) {
-                foo = buf.length;
-            } else {
-                foo = fileSize.intValue();
-            }
-            foo = in.read(buf, 0, foo);
-
-            if (foo < 0) {
-                // error
-                break;
-            }
-
-            fos.write(buf, 0, foo);
-
-            fileSize -= foo;
-
-            if (fileSize == 0L) break;
-        }
+        System.out.println("Start");
+        IOUtils.copyLarge(in, fos, 0, fileSize);
+        System.out.println("end");
+        //
+//        int foo;
+//
+//        while (true) {
+//            if (buf.length < fileSize) {
+//                foo = buf.length;
+//            } else {
+//                foo = fileSize.intValue();
+//            }
+//            foo = in.read(buf, 0, foo);
+//
+//            if (foo < 0) {
+//                // error
+//                break;
+//            }
+//
+//            fos.write(buf, 0, foo);
+//
+//            fileSize -= foo;
+//
+//            if (fileSize == 0L) break;
+//        }
 
         return outFile;
     }
@@ -121,6 +169,7 @@ public class JschSession implements AutoCloseable {
         byte[] buf = new byte[5];
         // read '0644 '
         in.read(buf, 0, 5);
+        System.out.println("Buf=" + new String(buf, "UTF-8"));
     }
 
     private Long readFileSize(InputStream in) throws IOException {
@@ -133,6 +182,7 @@ public class JschSession implements AutoCloseable {
                 break;
             }
 
+            System.out.println("Buf2=" + new String(buf, "UTF-8"));
             if (buf[0] == ' ') break;
 
             fileSize = fileSize * 10L + (long) (buf[0] - '0');
@@ -146,6 +196,7 @@ public class JschSession implements AutoCloseable {
         for (int i = 0; ; i++) {
             in.read(buf, i, 1);
 
+            System.out.println("Buf3=" + new String(buf, "UTF-8"));
             if (buf[i] == (byte) 0x0a) {
                 fileName = new String(buf, 0, i);
                 break;
