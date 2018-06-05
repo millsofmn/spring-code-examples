@@ -9,14 +9,6 @@ import java.io.*;
 
 public class JschSession implements AutoCloseable {
 
-    public static void main(String[] args) throws Exception {
-        JschSessionFactory factory = new JschSessionFactory();
-        JschSession session = factory.getSession();
-
-        session.getFile("/reporting.bed", "MyFile.bed");
-        System.out.println("yes");
-        System.exit(0);
-    }
     /**
      * Jsch Session
      */

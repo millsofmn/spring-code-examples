@@ -21,10 +21,12 @@ public class JschExampleApplication extends SpringBootServletInitializer {
         System.out.println("Starting JSCH Example Application");
 
         try (JschFileTemplate session = factory.getFileTemplate()) {
-
-            session.downloadFile("/dlmp/prod/testDefinition/NMPAN-NGS22/pipelines/cnv/reporting.bed");
+            String path = "";
+            session.checkFileExists(path);
+//            session.downloadFile(path);
 
         } catch (Exception e) {
+            System.out.println("Error: ++++++++++++++++++");
             e.printStackTrace();
         }
 

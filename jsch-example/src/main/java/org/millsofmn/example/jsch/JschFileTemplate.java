@@ -5,8 +5,6 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.commons.io.IOUtils;
 
-import java.io.*;
-
 public class JschFileTemplate implements AutoCloseable {
 
     private final Session session;
@@ -30,6 +28,21 @@ public class JschFileTemplate implements AutoCloseable {
         channel.connect();
     }
 
+    public void checkFileExists(String path) throws IOException, JSchException {
+        String command = "ls " + path;
+
+        executeCommand(command);
+//        flushOutputStream();
+//        checkAck();
+
+        // just a comment to push
+        try {
+            String response = readResponse();
+        } catch (IOException e) {
+            throw new FileNotFoundException(path);
+        }
+
+    }
     public File downloadFile(String path) throws IOException, JSchException {
         // scp command
         String command = "scp -f " + path;
@@ -38,7 +51,7 @@ public class JschFileTemplate implements AutoCloseable {
         flushOutputStream();
         checkAck();
 
-        String header = readFileHeader();
+        String header = readResponse();
         String[] head = header.split(" ");
         String filePermissions = head[0];
         Long fileSize = Long.valueOf(head[1]);
@@ -66,10 +79,10 @@ public class JschFileTemplate implements AutoCloseable {
         outputStream.flush();
     }
 
-    private String readFileHeader() throws IOException {
-        String header = readLine();
-        System.out.println("Header : " + header);
-        return header;
+    private String readResponse() throws IOException {
+        String response = readLine();
+        System.out.println("Response : " + response);
+        return response;
     }
 
     private String readLine() throws IOException {

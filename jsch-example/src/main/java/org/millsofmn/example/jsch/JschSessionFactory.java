@@ -1,13 +1,20 @@
 package org.millsofmn.example.jsch;
 
 import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = "jsch", ignoreInvalidFields = true)
 public class JschSessionFactory {
+
+    private final String STRICK_HOST_KEY_CHECKING = "StrictHostKeyChecking";
+    private final Logger log = LoggerFactory.getLogger(JschSessionFactory.class);
+
     private String username;
     private String password;
     private String host;
@@ -46,23 +53,25 @@ public class JschSessionFactory {
     }
 
     public JschSession getSession() throws Exception {
-        return new JschSession(this.createClient());
+        return new JschSession(this.createSessionInstance());
     }
 
     public JschFileTemplate getFileTemplate() throws Exception {
-        return new JschFileTemplate(this.createClient());
+        return new JschFileTemplate(this.createSessionInstance());
     }
 
-    private Session createClient() throws Exception {
-        JSch jsch = new JSch();
+    private Session createSessionInstance() throws JSchException {
+            JSch jsch = new JSch();
 
-        Session session = jsch.getSession(username, host, 22);
-        session.setPassword(password);
-        session.setConfig("StrictHostKeyChecking", "no");
+            log.info("Establishing connection to {}:{} with user {}", host, port, username);
+            Session session = jsch.getSession(username, host, port);
+            session.setPassword(password);
 
-        System.out.println("Try establishing connection to " + host);
-        session.connect();
-        System.out.println("Connection established");
-        return session;
+            session.setConfig(STRICK_HOST_KEY_CHECKING, "no"); // prevents prompt to confirm key
+
+            session.connect();
+            log.info("Connection established");
+
+            return session;
     }
 }
