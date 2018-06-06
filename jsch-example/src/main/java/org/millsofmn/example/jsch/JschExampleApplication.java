@@ -16,14 +16,18 @@ public class JschExampleApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args){
         ConfigurableApplicationContext ctx = SpringApplication.run(JschExampleApplication.class, args);
-        JschSessionFactory factory = ctx.getBean(JschSessionFactory.class);
+        ScpSessionFactory factory = ctx.getBean(ScpSessionFactory.class);
 
         System.out.println("Starting JSCH Example Application");
 
-        try (JschFileTemplate session = factory.getFileTemplate()) {
-            String path = "";
-            session.checkFileExists(path);
-//            session.downloadFile(path);
+        try (ScpClient session = factory.getScpClient()) {
+            String remoteFile = "/dlmp/dev/scripts/sources/teamwork/lyle/output.txt";
+            String localFile = "C:\\Users\\m108491\\IdeaProjects\\spring-code-examples\\rest-example\\output.bed";
+
+            session.checkFileExists(remoteFile);
+            session.getFile(remoteFile, localFile);
+
+            session.putFile(localFile, "/dlmp/dev/scripts/sources/teamwork/lyle/output2.txt");
 
         } catch (Exception e) {
             System.out.println("Error: ++++++++++++++++++");

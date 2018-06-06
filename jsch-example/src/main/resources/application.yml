@@ -3,3 +3,8 @@ jsch:
   password: ${password}
   host: ${host}
   port: ${port}
+scp:
+  username: ${username}
+  password: ${password}
+  host: ${host}
+  port: ${port}

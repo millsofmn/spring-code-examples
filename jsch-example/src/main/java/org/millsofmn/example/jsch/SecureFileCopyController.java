@@ -12,7 +12,7 @@ import java.io.FileReader;
 public class SecureFileCopyController {
 
     @Autowired
-    JschSessionFactory factory;
+    ScpSessionFactory factory;
 
     @RequestMapping("/")
     public String index(){
@@ -25,7 +25,7 @@ public class SecureFileCopyController {
         String fileName1 = "reporting.bed";
         String fileName2 = "target.bed";
 
-        try(JschSession session = factory.getSession();) {
+        try (ScpClient session = factory.getScpClient()) {
 
             StringBuilder sb = new StringBuilder();
 
