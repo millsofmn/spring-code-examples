@@ -106,7 +106,6 @@ public class ScpClient implements AutoCloseable {
             command += "\n";
 
             writeOutputStream(command);
-            flushOutputStream();
 
             checkAck();
 
