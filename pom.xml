@@ -18,6 +18,7 @@
         <module>ftp-example</module>
         <module>jsch-example</module>
         <module>rest-example</module>
+        <module>jpa-example</module>
     </modules>
 
     <build>
