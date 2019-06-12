@@ -1,4 +1,4 @@
-package org.millsofmn.example.rules;
+package org.millsofmn.example.rules.sample;
 
 import java.util.ArrayList;
 import java.util.List;

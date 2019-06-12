@@ -1,13 +1,13 @@
 package org.millsofmn.example.rules;
 
-import static org.millsofmn.example.rules.action.SetDefaultAction.setFieldToDefaultValue;
-import static org.millsofmn.example.rules.action.SetErrorAction.setFieldInError;
-import static org.millsofmn.example.rules.criteria.fieldcriteria.FieldValueEmptyCriteria.fieldValueIsEmpty;
-import static org.millsofmn.example.rules.criteria.fieldcriteria.FieldValueEqualsCriteria.fieldValueIsNotEqualTo;
-import static org.millsofmn.example.rules.criteria.fieldcriteria.FieldValueRegexCriteria.fieldValueDoesNotMatchRegex;
-import static org.millsofmn.example.rules.criteria.ruletype.GlobalRuleCriteria.itIsGlobalRule;
-import static org.millsofmn.example.rules.criteria.ruletype.PanelRuleCriteria.itIsPanelRuleForMnemonic;
-import static org.millsofmn.example.rules.criteria.ruletype.ProjectRuleCriteria.itIsProjectRuleForProject;
+import org.millsofmn.example.rules.sample.Bin;
+import org.millsofmn.example.rules.sample.Priority;
+import org.millsofmn.example.rules.sample.Sample;
+
+import java.util.Arrays;
+
+import static org.millsofmn.example.rules.action.SetFieldValueAction.setFieldValueColumn;
+import static org.millsofmn.example.rules.criteria.SampleColumnCriteria.thisSampleColumn;
 
 public class RunTest {
     public static void main(String[] args) {
@@ -15,14 +15,11 @@ public class RunTest {
         Sample sample = new Sample();
         sample.getId().setCellValue("abc");
         sample.getProject().setCellValue("PROJ");
-        sample.getPanel().setCellValue("PANEL");
+        sample.getPanel().setCellValue("PANEL1 PANEL2");
+
+        System.out.println(sample);
 
         EvaluatorEngine evaluator = new EvaluatorEngine();
-
-//        defaultRule();
-//        requiredRule();
-//        regexRule();
-//        equalsRule();
 
         evaluator.registerRule(defaultRule());
         evaluator.registerRule(requiredRule());
@@ -33,75 +30,47 @@ public class RunTest {
         System.out.println(sample);
     }
 
-    public static Rule regexRule() {
-        Rule rule = new RuleBuilder()
+    public static SampleRule regexRule() {
+        return new SampleRuleBuilder()
                 .description("Project rule to validate regex")
-                .when(itIsProjectRuleForProject("PROJ"))
-                .and(fieldValueDoesNotMatchRegex(Sample.ID).regex("123"))
-                .then(setFieldInError(Sample.ID).message("Must match"))
+                .priority(Priority.PROJECT_RULE.ordinal())
+                .bin(Bin.SECOND)
+                .when(thisSampleColumn(Sample.PROJECT).isEqualTo("PROJ"))
+                .and(thisSampleColumn(Sample.ID).doesNotMatchRegex("123"))
+                .then(setFieldValueColumn(Sample.ID).asInvalid().withMessage("Values Must Match"))
                 .build();
-
-//        Sample sample = new Sample();
-//        sample.getId().setCellValue("abc");
-//        sample.getProject().setCellValue("PROJ");
-//
-//        executeRule(rule, sample);
-//        System.out.println(sample.getId());
-        return rule;
     }
 
-    public static Rule defaultRule() {
-        Rule rule = new RuleBuilder()
+    public static SampleRule defaultRule() {
+        return new SampleRuleBuilder()
                 .description("Global rule to set gender to default hello kitty")
-                .when(itIsGlobalRule())
-                .and(fieldValueIsEmpty(Sample.GENDER))
-                .then(setFieldToDefaultValue(Sample.GENDER).value("Hello Kitty"))
+                .priority(Priority.GLOBAL_RULE.ordinal())
+                .bin(Bin.FIRST)
+                .when(thisSampleColumn(Sample.GENDER).isEmpty())
+                .then(setFieldValueColumn(Sample.GENDER).withValue("Hello Kitty"))
                 .build();
 
-//        Sample sample = new Sample();
-//        executeRule(rule, sample);
-        return rule;
     }
 
-    public static Rule requiredRule() {
-        Rule rule = new RuleBuilder()
-                .description("Require that DNA source for panel 'PANEL'")
-                .when(itIsPanelRuleForMnemonic("PANEL"))
-                .and(fieldValueIsEmpty(Sample.DNA_SOURCE))
-                .then(setFieldInError(Sample.DNA_SOURCE).message("DNA source is required for panel"))
+    public static SampleRule requiredRule() {
+        return new SampleRuleBuilder()
+                .description("Panel rule Require that DNA source for panel 'PANEL'")
+                .priority(Priority.PANEL_RULE.ordinal())
+                .bin(Bin.FOURTH)
+                .when(thisSampleColumn(Sample.PANEL).isSplitOnSpace().isEqualTo("PANEL1"))
+                .and(thisSampleColumn(Sample.DNA_SOURCE).isEmpty())
+                .then(setFieldValueColumn(Sample.DNA_SOURCE).withMessage("DNA source is required for panel"))
                 .build();
-
-//        Sample sample = new Sample();
-//        sample.getPanel().setCellValue("PANEL");
-
-//        executeRule(rule, sample);
-        return rule;
     }
 
-    public static Rule equalsRule() {
-        Rule rule = new RuleBuilder()
-                .description("Require that DNA source for panel 'PANEL'")
-                .when(itIsPanelRuleForMnemonic("PANEL"))
-                .and(fieldValueIsNotEqualTo(Sample.COMMENTS).value("Test"))
-                .then(setFieldInError(Sample.COMMENTS).message("Does not contain test."))
+    public static SampleRule equalsRule() {
+        return new SampleRuleBuilder()
+                .description("Panel rule comment is in list'")
+                .priority(Priority.PANEL_RULE.ordinal())
+                .bin(Bin.THIRD)
+                .when(thisSampleColumn(Sample.PANEL).isSplitOnSpace().isEqualTo("PANEL2"))
+                .and(thisSampleColumn(Sample.COMMENTS).isNotFoundInList(Arrays.asList("Test", "Tester")))
+                .then(setFieldValueColumn(Sample.COMMENTS).asInvalid().withMessage("Does not contain tester."))
                 .build();
-
-//        Sample sample = new Sample();
-//        sample.getPanel().setCellValue("PANEL");
-//
-//        executeRule(rule, sample);
-        return rule;
-    }
-
-    public static void executeRule(Rule rule, Sample sample) {
-        System.out.println("Running rule : " + rule.getDescription());
-        System.out.println("Sample before : " + sample);
-
-        if (rule.evaluate(sample)) {
-            rule.execute(sample);
-        }
-
-        System.out.println("Sample after : " + sample);
-
     }
 }

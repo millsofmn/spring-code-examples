@@ -1,26 +1,31 @@
 package org.millsofmn.example.rules;
 
+import org.millsofmn.example.rules.sample.Sample;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class EvaluatorEngine {
 
-    List<Rule> rules = new ArrayList<>();
+    List<SampleRule> sampleRules = new ArrayList<>();
 
-    public void setRules(List<Rule> rules) {
-        this.rules = rules;
+    public void setSampleRules(List<SampleRule> sampleRules) {
+        this.sampleRules = sampleRules;
     }
 
     public void run(Sample sample) {
 
-        for (Rule rule : rules) {
-            if (rule.evaluate(sample)) {
-                rule.execute(sample);
+        sampleRules.sort(new SampleRule.RuleComparator());
+
+        for (SampleRule sampleRule : sampleRules) {
+            System.out.println(sampleRule.getPriority() + " " + sampleRule.getBin() + " " + sampleRule.getDescription());
+            if (sampleRule.evaluate(sample)) {
+                sampleRule.execute(sample);
             }
         }
     }
 
-    public void registerRule(Rule rule) {
-        rules.add(rule);
+    public void registerRule(SampleRule sampleRule) {
+        sampleRules.add(sampleRule);
     }
 }
