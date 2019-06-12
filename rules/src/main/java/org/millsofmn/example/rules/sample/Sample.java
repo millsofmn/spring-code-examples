@@ -108,7 +108,7 @@ public class Sample {
      * @return string of all the fields messages.
      */
     public String getMessages() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (FieldValue f : fieldValueMap.values()) {
             sb.append(f.getMessage());
         }
@@ -117,7 +117,7 @@ public class Sample {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("Sample{");
+        final StringBuilder sb = new StringBuilder("Sample{");
         sb.append("id=").append(getId());
         sb.append(", panel=").append(getPanel());
         sb.append(", project=").append(getProject());

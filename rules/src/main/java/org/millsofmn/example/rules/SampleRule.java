@@ -55,8 +55,8 @@ public class SampleRule {
 
     public boolean evaluate(Sample sample){
 
-        for(Criteria criteria : this.criteria){
-            if(!criteria.evaluate(sample)){
+        for(Criteria criterion : this.criteria){
+            if(!criterion.evaluate(sample)){
                 return false;
             }
         }

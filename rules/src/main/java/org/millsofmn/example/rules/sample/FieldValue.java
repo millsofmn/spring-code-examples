@@ -67,7 +67,7 @@ public class FieldValue {
      * @return string of all the messages.
      */
     public String getMessage() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for(String m : messages){
             if(!m.isEmpty()){
                 sb.append(" * ").append(m).append("\n");
