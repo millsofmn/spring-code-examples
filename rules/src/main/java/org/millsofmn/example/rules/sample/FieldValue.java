@@ -121,7 +121,7 @@ public class FieldValue {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("FieldValue{");
+        final StringBuilder sb = new StringBuilder("FieldValue{");
         sb.append("columnName='").append(columnName).append('\'');
         sb.append(", cellValue='").append(cellValue).append('\'');
         sb.append(", message='").append(message).append('\'');
