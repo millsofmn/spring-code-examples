@@ -7,7 +7,7 @@ import org.millsofmn.example.rules.sample.Bin;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SampleRuleBuilder {
+public class RuleBuilder<T> {
 
     String description = "";
     int priority = 10;
@@ -16,51 +16,51 @@ public class SampleRuleBuilder {
     List<Criteria> criteria = new ArrayList<>();
     List<Action> actions = new ArrayList<>();
 
-    public SampleRuleBuilder description(String description){
+    public RuleBuilder description(String description){
         this.description = description;
         return this;
     }
 
-    public SampleRuleBuilder priority(int priority){
+    public RuleBuilder priority(int priority){
         this.priority = priority;
         return this;
     }
 
-    public SampleRuleBuilder bin(Bin bin){
+    public RuleBuilder bin(Bin bin){
         this.bin = bin;
         return this;
     }
 
-    public SampleRuleBuilder when(Criteria criteria){
+    public RuleBuilder when(Criteria criteria){
         this.criteria.add(criteria);
 
         return this;
     }
 
-    public SampleRuleBuilder and(Criteria criteria){
+    public RuleBuilder and(Criteria criteria){
         this.criteria.add(criteria);
 
         return this;
     }
 
-    public SampleRuleBuilder then(Action action){
+    public RuleBuilder then(Action action){
         this.actions.add(action);
         return this;
     }
 
-    public SampleRuleBuilder and(Action action){
+    public RuleBuilder and(Action action){
         this.actions.add(action);
         return this;
     }
 
-    public SampleRule build(){
-        SampleRule sampleRule = new SampleRule();
-        sampleRule.setCriteria(criteria);
-        sampleRule.setActions(actions);
-        sampleRule.setDescription(description);
-        sampleRule.setPriority(priority);
-        sampleRule.setBin(bin);
+    public Rule buildRule(){
+        Rule formRule = new Rule<T>();
+        formRule.setCriteria(criteria);
+        formRule.setActions(actions);
+        formRule.setDescription(description);
+        formRule.setPriority(priority);
+        formRule.setBin(bin);
 
-        return sampleRule;
+        return formRule;
     }
 }

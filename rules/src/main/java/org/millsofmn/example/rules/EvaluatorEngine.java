@@ -1,5 +1,6 @@
 package org.millsofmn.example.rules;
 
+import org.millsofmn.example.rules.form.SampleForm;
 import org.millsofmn.example.rules.sample.Sample;
 
 import java.util.ArrayList;
@@ -7,17 +8,13 @@ import java.util.List;
 
 public class EvaluatorEngine {
 
-    List<SampleRule> sampleRules = new ArrayList<>();
-
-    public void setSampleRules(List<SampleRule> sampleRules) {
-        this.sampleRules = sampleRules;
-    }
+    List<Rule> sampleRules = new ArrayList<>();
 
     public void run(Sample sample) {
 
-        sampleRules.sort(new SampleRule.RuleComparator());
+        sampleRules.sort(new Rule.RuleComparator());
 
-        for (SampleRule sampleRule : sampleRules) {
+        for (Rule sampleRule : sampleRules) {
             System.out.println(sampleRule.getPriority() + " " + sampleRule.getBin() + " " + sampleRule.getDescription());
             if (sampleRule.evaluate(sample)) {
                 sampleRule.execute(sample);
@@ -25,7 +22,7 @@ public class EvaluatorEngine {
         }
     }
 
-    public void registerRule(SampleRule sampleRule) {
+    public void registerRule(Rule sampleRule) {
         sampleRules.add(sampleRule);
     }
 }

@@ -8,6 +8,7 @@ public class Sample {
 
     // define the known columns
     public static final String ID = "ID";
+    public static final String PLATE_ID = "PLATE_ID";
     public static final String PANEL = "PANEL";
     public static final String PROJECT = "PROJECT";
     public static final String GENDER = "GENDER";
@@ -24,6 +25,7 @@ public class Sample {
      */
     public Sample() {
         fieldValueMap.put(ID, new FieldValue(ID));
+        fieldValueMap.put(PLATE_ID, new FieldValue(PLATE_ID));
         fieldValueMap.put(PANEL, new FieldValue(PANEL));
         fieldValueMap.put(PROJECT, new FieldValue(PROJECT));
         fieldValueMap.put(GENDER, new FieldValue(GENDER));
@@ -50,6 +52,14 @@ public class Sample {
 
     public void setId(FieldValue id) {
         this.fieldValueMap.put(ID, id);
+    }
+
+    public FieldValue getPlateId() {
+        return fieldValueMap.get(PLATE_ID);
+    }
+
+    public void setPlateId(FieldValue plateId) {
+        this.fieldValueMap.put(PLATE_ID, plateId);
     }
 
     public FieldValue getPanel() {
@@ -119,6 +129,7 @@ public class Sample {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Sample{");
         sb.append("id=").append(getId());
+        sb.append(", plateId=").append(getPlateId());
         sb.append(", panel=").append(getPanel());
         sb.append(", project=").append(getProject());
         sb.append(", gender=").append(getGender());

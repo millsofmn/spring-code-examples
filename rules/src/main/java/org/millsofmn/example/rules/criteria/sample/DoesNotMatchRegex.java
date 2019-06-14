@@ -1,4 +1,4 @@
-package org.millsofmn.example.rules.criteria.expression;
+package org.millsofmn.example.rules.criteria.sample;
 
 public class DoesNotMatchRegex extends MatchesRegex {
 

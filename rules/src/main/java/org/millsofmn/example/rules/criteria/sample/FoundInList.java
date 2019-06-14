@@ -1,4 +1,6 @@
-package org.millsofmn.example.rules.criteria.expression;
+package org.millsofmn.example.rules.criteria.sample;
+
+import org.millsofmn.example.rules.criteria.Expression;
 
 import java.util.ArrayList;
 import java.util.List;

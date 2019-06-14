@@ -4,52 +4,52 @@ import org.millsofmn.example.rules.sample.FieldValue;
 import org.millsofmn.example.rules.sample.Sample;
 import org.millsofmn.example.rules.sample.ValidationState;
 
-public class SetFieldValueAction implements Action {
+public class SampleFieldValueAction implements Action<Sample> {
 
     private String columnName;
     private String message;
     private ValidationState validationState;
     private String value;
 
-    public static SetFieldValueAction setFieldValueColumn(String columnName) {
-        return new SetFieldValueAction(columnName);
+    public static SampleFieldValueAction setFieldValueColumn(String columnName) {
+        return new SampleFieldValueAction(columnName);
     }
 
-    private SetFieldValueAction(String columnName) {
+    private SampleFieldValueAction(String columnName) {
         this.columnName = columnName;
     }
 
-    public SetFieldValueAction asInvalid(){
+    public SampleFieldValueAction asInvalid(){
         this.validationState = ValidationState.INVALID;
         return this;
     }
 
-    public SetFieldValueAction asValid(){
+    public SampleFieldValueAction asValid(){
         this.validationState = ValidationState.VALID;
         return this;
     }
 
-    public SetFieldValueAction asDefaulted(){
+    public SampleFieldValueAction asDefaulted(){
         this.validationState = ValidationState.DEFAULT_VALUE;
         return this;
     }
 
-    public SetFieldValueAction asIgnored(){
+    public SampleFieldValueAction asIgnored(){
         this.validationState = ValidationState.IGNORED;
         return this;
     }
 
-    public SetFieldValueAction asNotValidated(){
+    public SampleFieldValueAction asNotValidated(){
         this.validationState = ValidationState.NOT_VALIDATED;
         return this;
     }
 
-    public SetFieldValueAction withMessage(String message){
+    public SampleFieldValueAction withMessage(String message){
         this.message = message;
         return this;
     }
 
-    public SetFieldValueAction withValue(String value){
+    public SampleFieldValueAction withValue(String value){
         this.value = value;
         return this;
     }

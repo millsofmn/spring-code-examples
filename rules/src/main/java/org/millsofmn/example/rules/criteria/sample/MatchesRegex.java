@@ -1,4 +1,6 @@
-package org.millsofmn.example.rules.criteria.expression;
+package org.millsofmn.example.rules.criteria.sample;
+
+import org.millsofmn.example.rules.criteria.Expression;
 
 public class MatchesRegex implements Expression<String> {
 
