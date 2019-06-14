@@ -4,52 +4,52 @@ import org.millsofmn.example.rules.sample.FieldValue;
 import org.millsofmn.example.rules.sample.Sample;
 import org.millsofmn.example.rules.sample.ValidationState;
 
-public class SampleFieldValueAction implements Action<Sample> {
+public class SampleAction implements Action<Sample> {
 
     private String columnName;
     private String message;
     private ValidationState validationState;
     private String value;
 
-    public static SampleFieldValueAction setFieldValueColumn(String columnName) {
-        return new SampleFieldValueAction(columnName);
+    public static SampleAction setFieldValueColumn(String columnName) {
+        return new SampleAction(columnName);
     }
 
-    private SampleFieldValueAction(String columnName) {
+    private SampleAction(String columnName) {
         this.columnName = columnName;
     }
 
-    public SampleFieldValueAction asInvalid(){
+    public SampleAction asInvalid(){
         this.validationState = ValidationState.INVALID;
         return this;
     }
 
-    public SampleFieldValueAction asValid(){
+    public SampleAction asValid(){
         this.validationState = ValidationState.VALID;
         return this;
     }
 
-    public SampleFieldValueAction asDefaulted(){
+    public SampleAction asDefaulted(){
         this.validationState = ValidationState.DEFAULT_VALUE;
         return this;
     }
 
-    public SampleFieldValueAction asIgnored(){
+    public SampleAction asIgnored(){
         this.validationState = ValidationState.IGNORED;
         return this;
     }
 
-    public SampleFieldValueAction asNotValidated(){
+    public SampleAction asNotValidated(){
         this.validationState = ValidationState.NOT_VALIDATED;
         return this;
     }
 
-    public SampleFieldValueAction withMessage(String message){
+    public SampleAction withMessage(String message){
         this.message = message;
         return this;
     }
 
-    public SampleFieldValueAction withValue(String value){
+    public SampleAction withValue(String value){
         this.value = value;
         return this;
     }
@@ -62,7 +62,7 @@ public class SampleFieldValueAction implements Action<Sample> {
             fieldValue.setEvalResult(validationState);
         }
         if(message != null){
-            fieldValue.setMessage(message);
+            fieldValue.addMessage(message);
         }
         if(value != null){
             fieldValue.setCellValue(value);

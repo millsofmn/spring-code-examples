@@ -7,14 +7,22 @@ import org.millsofmn.example.rules.sample.Bin;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RuleBuilder<T> {
+public class RuleBuilder {
 
+    enum RuleType {SAMPLE, FORM}
+
+    RuleType ruleType;
     String description = "";
     int priority = 10;
     Bin bin = Bin.FOURTH;
 
     List<Criteria> criteria = new ArrayList<>();
     List<Action> actions = new ArrayList<>();
+
+    public RuleBuilder ruleType(RuleType ruleType) {
+        this.ruleType = ruleType;
+        return this;
+    }
 
     public RuleBuilder description(String description){
         this.description = description;
@@ -54,7 +62,12 @@ public class RuleBuilder<T> {
     }
 
     public Rule buildRule(){
-        Rule formRule = new Rule<T>();
+        Rule formRule;
+        if(ruleType == RuleType.SAMPLE){
+            formRule = new Rule();
+        } else {
+            formRule = new FormRule();
+        }
         formRule.setCriteria(criteria);
         formRule.setActions(actions);
         formRule.setDescription(description);

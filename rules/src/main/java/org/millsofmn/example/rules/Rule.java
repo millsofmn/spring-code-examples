@@ -1,31 +1,26 @@
 package org.millsofmn.example.rules;
 
 import org.millsofmn.example.rules.action.Action;
+import org.millsofmn.example.rules.action.SampleAction;
+import org.millsofmn.example.rules.action.SampleFormAction;
 import org.millsofmn.example.rules.criteria.Criteria;
+import org.millsofmn.example.rules.form.SampleForm;
 import org.millsofmn.example.rules.sample.Bin;
+import org.millsofmn.example.rules.sample.Sample;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.StringJoiner;
 
-public class Rule<T> {
+public class Rule {
 
     private String description;
-    private Class<T> type;
     private Bin bin;
     private int priority;
 
     protected List<Criteria> criteria = new ArrayList<>();
     protected List<Action> actions = new ArrayList<>();
-
-    public Rule(Class<T> type) {
-        this.type = type;
-    }
-
-    public Class<T> getMyType() {
-        return this.type;
-    }
 
     public Bin getBin() {
         return bin;
@@ -60,26 +55,53 @@ public class Rule<T> {
     }
 
 
-    public boolean evaluate(T sample){
-        for(Criteria criterion : criteria){
-            if(!criterion.evaluate(sample)){
-                return false;
+    public boolean evaluate(SampleForm form) {
+        boolean formNotValid = false;
+        for (Sample sample : form.getSamples()) {
+            boolean matchSample = true;
+            for (Criteria criterion : criteria) {
+                if (!criterion.evaluate(sample)) {
+                    matchSample = false;
+                }
+            }
+            formNotValid = true;
+
+            if(matchSample){
+                execute(sample);
             }
         }
-        return true;
+
+        if (formNotValid) {
+            execute(form);
+        }
+
+        return formNotValid;
     }
-    public void execute(T object) {
-        for(Action act : actions){
-            act.execute(object);
+
+    public void execute(Sample sample) {
+        for (Action act : actions) {
+            if (act.getClass().equals(SampleAction.class)) {
+                act.execute(sample);
+            }
+        }
+    }
+
+    public void execute(SampleForm form) {
+        for (Action act : actions) {
+            if (act.getClass().equals(SampleFormAction.class)) {
+                act.execute(form);
+            }
         }
     }
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", SampleRule.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", Rule.class.getSimpleName() + "[", "]")
                 .add("description='" + description + "'")
                 .add("bin=" + bin)
                 .add("priority=" + priority)
+                .add("criteria=" + criteria)
+                .add("actions=" + actions)
                 .toString();
     }
 
@@ -89,7 +111,7 @@ public class Rule<T> {
         public int compare(Rule r1, Rule r2) {
             int comparePriority = Integer.compare(r1.getPriority(), r2.getPriority());
 
-            if(comparePriority == 0){
+            if (comparePriority == 0) {
                 return Integer.compare(
                         r1.getBin().ordinal(),
                         r2.getBin().ordinal());

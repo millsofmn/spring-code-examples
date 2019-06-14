@@ -1,5 +1,4 @@
-package org.millsofmn.example.rules.criteria.sample;
-
+package org.millsofmn.example.rules.criteria.expression;
 
 public class IsNotEmpty extends IsEmpty {
 

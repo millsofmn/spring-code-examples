@@ -127,7 +127,7 @@ public class Sample {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Sample{");
+        final StringBuilder sb = new StringBuilder("\r\nSample{");
         sb.append("id=").append(getId());
         sb.append(", plateId=").append(getPlateId());
         sb.append(", panel=").append(getPanel());

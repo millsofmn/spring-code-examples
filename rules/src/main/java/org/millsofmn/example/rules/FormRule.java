@@ -2,21 +2,26 @@ package org.millsofmn.example.rules;
 
 import org.millsofmn.example.rules.criteria.Criteria;
 import org.millsofmn.example.rules.form.SampleForm;
+import org.millsofmn.example.rules.sample.Sample;
 
-public class FormRule extends Rule<SampleForm> {
+public class FormRule extends Rule {
 
-    @Override
-    public boolean evaluate(SampleForm sample) {
-        for(Criteria criterion : criteria){
-            if(!criterion.evaluate(sample)){
-                return false;
+
+    public boolean evaluate(SampleForm form) {
+        boolean formNotValid = false;
+        for (Criteria criterion : criteria) {
+            for (Sample sample : form.getSamples()) {
+                if (criterion.evaluate(sample)) {
+                    execute(sample);
+                }
             }
+            formNotValid = true;
         }
-        return true;
-    }
 
-    @Override
-    public void execute(SampleForm sample) {
+        if (formNotValid) {
+            execute(form);
+        }
 
+        return formNotValid;
     }
 }

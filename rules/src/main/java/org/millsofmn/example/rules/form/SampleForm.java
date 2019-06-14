@@ -4,6 +4,7 @@ import org.millsofmn.example.rules.sample.Sample;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 public class SampleForm {
 
@@ -23,5 +24,12 @@ public class SampleForm {
 
     public void addSamples(List<Sample> samples) {
         this.samples = samples;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", SampleForm.class.getSimpleName() + "[", "]")
+                .add("samples=" + samples)
+                .toString();
     }
 }

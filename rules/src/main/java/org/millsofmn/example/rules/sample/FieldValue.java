@@ -124,7 +124,7 @@ public class FieldValue {
         final StringBuilder sb = new StringBuilder("FieldValue{");
         sb.append("columnName='").append(columnName).append('\'');
         sb.append(", cellValue='").append(cellValue).append('\'');
-        sb.append(", message='").append(message).append('\'');
+        sb.append(", message='").append(messages).append('\'');
         sb.append(", evalResult='").append(evalResult).append('\'');
         sb.append('}');
         return sb.toString();

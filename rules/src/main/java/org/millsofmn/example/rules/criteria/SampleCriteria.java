@@ -1,16 +1,16 @@
 package org.millsofmn.example.rules.criteria;
 
+import org.millsofmn.example.rules.criteria.expression.*;
 import org.millsofmn.example.rules.sample.Sample;
-import org.millsofmn.example.rules.criteria.sample.*;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class SampleCriteria implements Criteria<Sample> {
 
-    boolean splitColumnValues = false;
-    String columnName;
-    Expression<String> expression;
+    private boolean splitColumnValues = false;
+    private String columnName;
+    private Expression expression;
 
     public static SampleCriteria thisSampleColumn(String columnName){
         return new SampleCriteria(columnName);
@@ -36,13 +36,13 @@ public class SampleCriteria implements Criteria<Sample> {
         return false;
     }
 
-    public SampleCriteria isNotEqualTo(String value){
-        expression = new NotEqualTo(value);
+    public SampleCriteria splitColumnValueOnSpace(){
+        splitColumnValues = true;
         return this;
     }
 
-    public SampleCriteria splitColumnValueOnSpace(){
-        splitColumnValues = true;
+    public SampleCriteria isNotEqualTo(String value){
+        expression = new NotEqualTo(value);
         return this;
     }
 

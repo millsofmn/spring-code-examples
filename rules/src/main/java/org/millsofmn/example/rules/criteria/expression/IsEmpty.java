@@ -1,6 +1,6 @@
-package org.millsofmn.example.rules.criteria.sample;
+package org.millsofmn.example.rules.criteria.expression;
 
-import org.millsofmn.example.rules.criteria.Expression;
+import org.millsofmn.example.rules.criteria.expression.Expression;
 
 public class IsEmpty implements Expression<String> {
     @Override
