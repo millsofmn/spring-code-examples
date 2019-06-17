@@ -11,6 +11,7 @@ public class Sample {
     public static final String PLATE_ID = "PLATE_ID";
     public static final String PANEL = "PANEL";
     public static final String PROJECT = "PROJECT";
+    public static final String PHASE = "PHASE";
     public static final String GENDER = "GENDER";
     public static final String DNA_SOURCE = "DNA_SOURCE";
     public static final String COMMENTS = "COMMENTS";
@@ -28,6 +29,7 @@ public class Sample {
         fieldValueMap.put(PLATE_ID, new FieldValue(PLATE_ID));
         fieldValueMap.put(PANEL, new FieldValue(PANEL));
         fieldValueMap.put(PROJECT, new FieldValue(PROJECT));
+        fieldValueMap.put(PHASE, new FieldValue(PHASE));
         fieldValueMap.put(GENDER, new FieldValue(GENDER));
         fieldValueMap.put(DNA_SOURCE, new FieldValue(DNA_SOURCE));
         fieldValueMap.put(COMMENTS, new FieldValue(COMMENTS));
@@ -76,6 +78,14 @@ public class Sample {
 
     public void setProject(FieldValue project) {
         this.fieldValueMap.put(PROJECT, project);
+    }
+
+    public FieldValue getPhase() {
+        return fieldValueMap.get(PHASE);
+    }
+
+    public void setPhase(FieldValue phase) {
+        this.fieldValueMap.put(PHASE, phase);
     }
 
     public FieldValue getGender() {
@@ -128,13 +138,14 @@ public class Sample {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("\r\nSample{");
-        sb.append("id=").append(getId());
-        sb.append(", plateId=").append(getPlateId());
-        sb.append(", panel=").append(getPanel());
-        sb.append(", project=").append(getProject());
-        sb.append(", gender=").append(getGender());
-        sb.append(", dnaSource=").append(getDnaSource());
-        sb.append(", comments=").append(getComments());
+        sb.append("\n\tid=").append(getId());
+        sb.append("\n\tplateId=").append(getPlateId());
+        sb.append("\n\tpanel=").append(getPanel());
+        sb.append("\n\tproject=").append(getProject());
+        sb.append("\n\tphase=").append(getPhase());
+        sb.append("\n\tgender=").append(getGender());
+        sb.append("\n\tdnaSource=").append(getDnaSource());
+        sb.append("\n\tcomments=").append(getComments());
         sb.append('}');
         return sb.toString();
     }

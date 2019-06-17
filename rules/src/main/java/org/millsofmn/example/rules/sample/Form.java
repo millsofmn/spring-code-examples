@@ -1,12 +1,10 @@
-package org.millsofmn.example.rules.form;
-
-import org.millsofmn.example.rules.sample.Sample;
+package org.millsofmn.example.rules.sample;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
-public class SampleForm {
+public class Form {
 
     private List<Sample> samples = new ArrayList<>();
 
@@ -28,7 +26,7 @@ public class SampleForm {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", SampleForm.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", Form.class.getSimpleName() + "[", "]")
                 .add("samples=" + samples)
                 .toString();
     }

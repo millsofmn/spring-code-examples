@@ -2,7 +2,7 @@ package org.millsofmn.example.rules.criteria.expression;
 
 public class IsUnique implements Expression<String> {
 
-    String thisValue = "";
+    private String thisValue = "";
 
     @Override
     public boolean evaluate(String value) {

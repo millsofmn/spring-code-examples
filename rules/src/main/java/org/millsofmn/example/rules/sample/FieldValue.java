@@ -5,11 +5,9 @@ import java.util.List;
 
 public class FieldValue {
 
-    private String columnName = "";
+    private String columnName;
 
-    private String cellValue = "";
-
-    private String message = "";
+    private String cellValue;
 
     private boolean conjugated = false;
 
@@ -17,8 +15,6 @@ public class FieldValue {
 
     private List<String> messages = new ArrayList<>();
 
-    public FieldValue() {
-    }
 
     public FieldValue(String columnName) {
         this.columnName = columnName;
@@ -77,15 +73,6 @@ public class FieldValue {
         return sb.toString();
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public FieldValue message(String message) {
-        this.message = message;
-        return this;
-    }
-
     public ValidationState getEvalResult() {
         return evalResult;
     }
@@ -121,12 +108,10 @@ public class FieldValue {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("FieldValue{");
-        sb.append("columnName='").append(columnName).append('\'');
-        sb.append(", cellValue='").append(cellValue).append('\'');
-        sb.append(", message='").append(messages).append('\'');
-        sb.append(", evalResult='").append(evalResult).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return  "FieldValue{" + "columnName='" + columnName + '\'' +
+                ", cellValue='" + cellValue + '\'' +
+                ", message='" + messages + '\'' +
+                ", evalResult='" + evalResult + '\'' +
+                '}';
     }
 }

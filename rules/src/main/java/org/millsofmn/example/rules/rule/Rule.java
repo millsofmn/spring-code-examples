@@ -1,10 +1,9 @@
-package org.millsofmn.example.rules;
+package org.millsofmn.example.rules.rule;
 
 import org.millsofmn.example.rules.action.Action;
-import org.millsofmn.example.rules.action.SampleAction;
-import org.millsofmn.example.rules.action.SampleFormAction;
+import org.millsofmn.example.rules.action.FormAction;
 import org.millsofmn.example.rules.criteria.Criteria;
-import org.millsofmn.example.rules.form.SampleForm;
+import org.millsofmn.example.rules.sample.Form;
 import org.millsofmn.example.rules.sample.Bin;
 import org.millsofmn.example.rules.sample.Sample;
 
@@ -13,7 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.StringJoiner;
 
-public class Rule {
+public abstract class Rule {
 
     private String description;
     private Bin bin;
@@ -55,40 +54,17 @@ public class Rule {
     }
 
 
-    public boolean evaluate(SampleForm form) {
-        boolean formNotValid = false;
-        for (Sample sample : form.getSamples()) {
-            boolean matchSample = true;
-            for (Criteria criterion : criteria) {
-                if (!criterion.evaluate(sample)) {
-                    matchSample = false;
-                }
-            }
-            formNotValid = true;
-
-            if(matchSample){
-                execute(sample);
-            }
-        }
-
-        if (formNotValid) {
-            execute(form);
-        }
-
-        return formNotValid;
-    }
+    public abstract boolean evaluate(Form form);
 
     public void execute(Sample sample) {
         for (Action act : actions) {
-            if (act.getClass().equals(SampleAction.class)) {
-                act.execute(sample);
-            }
+            act.execute(sample);
         }
     }
 
-    public void execute(SampleForm form) {
+    public void execute(Form form) {
         for (Action act : actions) {
-            if (act.getClass().equals(SampleFormAction.class)) {
+            if (act.getClass().equals(FormAction.class)) {
                 act.execute(form);
             }
         }

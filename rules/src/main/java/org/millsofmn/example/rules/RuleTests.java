@@ -1,6 +1,7 @@
 package org.millsofmn.example.rules;
 
-import org.millsofmn.example.rules.form.SampleForm;
+import org.millsofmn.example.rules.rule.Rule;
+import org.millsofmn.example.rules.sample.Form;
 import org.millsofmn.example.rules.sample.Bin;
 import org.millsofmn.example.rules.sample.Priority;
 import org.millsofmn.example.rules.sample.Sample;
@@ -9,8 +10,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.millsofmn.example.rules.action.AlphabetizeCellValuesAction.alphabetize;
 import static org.millsofmn.example.rules.action.SampleAction.setFieldValueColumn;
-import static org.millsofmn.example.rules.criteria.SampleFormEvaluateCriteria.sampleFormColumn;
+import static org.millsofmn.example.rules.action.ColumnValueAction.uppercase;
+import static org.millsofmn.example.rules.criteria.FormCriteria.sampleFormColumn;
 import static org.millsofmn.example.rules.criteria.SampleCriteria.thisSampleColumn;
 
 
@@ -18,32 +21,38 @@ public class RuleTests {
 
     public static void main(String[] args) {
 
-        SampleForm form = new SampleForm();
+        Form form = new Form();
         form.setSamples(createSamples());
 
         EvaluatorEngine evaluator = new EvaluatorEngine();
-        evaluator.registerRule(createPlateIdRule());
-        evaluator.registerRule(createPlateIdNotEmptyRule());
-        evaluator.registerRule(createSampleIdMustBeUniqueRule());
+        evaluator.registerRule(createRulePlateIdsMustMatch());
+        evaluator.registerRule(createRulePlateIdMustNotBeEmpty());
+        evaluator.registerRule(createRuleSampleIdsMustBeUnique());
 
-        evaluator.registerRule(defaultRule());
-        evaluator.registerRule(requiredRule());
-        evaluator.registerRule(regexRule());
-        evaluator.registerRule(equalsRule());
+        evaluator.registerRule(createRuleEqualToAndMatchesRegex());
+        evaluator.registerRule(createRuleDefaultEmpty());
+        evaluator.registerRule(createRuleRequired());
+        evaluator.registerRule(createRuleEqualsValueInList());
+
+        evaluator.registerRule(createRuleToAlphabetizePanels());
+        evaluator.registerRule(createRuleToUpperCaseGenders());
 
         evaluator.run(form);
 
         System.out.println(form);
     }
 
-    private static List<Sample> createSamples(){
+    public static List<Sample> createSamples(){
         List<Sample> samples = new ArrayList<>();
 
         Sample sample = new Sample();
         sample.getId().setCellValue("123");
         sample.getPlateId().setCellValue("123ABC-De");
         sample.getProject().setCellValue("PROJ");
-        sample.getPanel().setCellValue("PANEL1 PANEL2");
+        sample.getPanel().setCellValue("PANEL2 PANEL1");
+        sample.getPhase().setCellValue("Clinical Verification");
+        sample.getDnaSource().setCellValue("DNA");
+        sample.getGender().setCellValue("Male");
         samples.add(sample);
 
         Sample sample1 = new Sample();
@@ -51,6 +60,8 @@ public class RuleTests {
         sample1.getPlateId().setCellValue("123ABC-D");
         sample1.getProject().setCellValue("PROJ");
         sample1.getPanel().setCellValue("PANEL1 PANEL2");
+        sample1.getDnaSource().setCellValue("DNA");
+        sample1.getPhase().setCellValue("Clinical Verification");
         samples.add(sample1);
 
         Sample sample2 = new Sample();
@@ -58,93 +69,109 @@ public class RuleTests {
         sample2.getPlateId().setCellValue("");
         sample2.getProject().setCellValue("PROJ");
         sample2.getPanel().setCellValue("PANEL1");
+        sample2.getPhase().setCellValue("Clinical");
+        sample2.getGender().setCellValue("Female");
         samples.add(sample2);
 
         Sample sample3 = new Sample();
         sample3.getId().setCellValue("SMPL02");
-        sample3.getPlateId().setCellValue("123ABC-D");
+        sample3.getPlateId().setCellValue("123ABC-De");
         sample3.getProject().setCellValue("PROJ");
-        sample3.getPanel().setCellValue("PANEL1");
+        sample3.getPanel().setCellValue("PANEL2");
+        sample3.getPhase().setCellValue("Clinical");
         samples.add(sample3);
 
         return samples;
     }
 
-    private static Rule createPlateIdRule(){
-
+    public static Rule createRulePlateIdsMustMatch(){
         return new RuleBuilder()
-                .description("Form Rule to have same plate id")
-                .when(sampleFormColumn(Sample.PLATE_ID).isUnique())
-                .then(setFieldValueColumn(Sample.PLATE_ID).asInvalid().withMessage("Plate Id must be same."))
-//                .and(setSampleForm().asInvalid().withMessage("Plate Ids do not match"))
+                .description("Form Rule: all plate ids must match")
+                .when(sampleFormColumn(Sample.PLATE_ID).hasUniqueValues())
+                .then(setFieldValueColumn(Sample.PLATE_ID).asInvalid().withMessage("All of the plate ids must match."))
                 .buildRule();
     }
 
-    public static Rule createPlateIdNotEmptyRule() {
+    public static Rule createRulePlateIdMustNotBeEmpty() {
         return new RuleBuilder()
-                .description("Panel rule Require that DNA source for panel 'PANEL'")
+                .description("Sample Rule: plate id must not be empty")
                 .priority(Priority.PANEL_RULE.ordinal())
                 .bin(Bin.FOURTH)
                 .when(thisSampleColumn(Sample.PLATE_ID).isEmpty())
-                .then(setFieldValueColumn(Sample.PLATE_ID).asValid().withMessage("I'm not empty"))
+                .then(setFieldValueColumn(Sample.PLATE_ID).asValid().withMessage("Plate id cannot be left empty."))
                 .buildRule();
     }
 
-    public static Rule createSampleIdMustBeUniqueRule() {
+    public static Rule createRuleSampleIdsMustBeUnique() {
         return new RuleBuilder()
-                .description("Panel rule Require that DNA source for panel 'PANEL'")
+                .description("Form Rule: all sample ids must be unique")
                 .priority(Priority.PANEL_RULE.ordinal())
                 .bin(Bin.FOURTH)
                 .when(sampleFormColumn(Sample.ID).isNotUnique())
-                .then(setFieldValueColumn(Sample.ID).asValid().withMessage("I am a duplicate"))
+                .then(setFieldValueColumn(Sample.ID).asInvalid().withMessage("Sample ids must be unique."))
                 .buildRule();
     }
 
-    public static Rule regexRule() {
+    public static Rule createRuleEqualToAndMatchesRegex() {
         return new RuleBuilder()
-                .description("Project rule to validate regex")
+                .description("Sample Rule: project is equal to PROJ and Id has 123")
                 .priority(Priority.PROJECT_RULE.ordinal())
                 .bin(Bin.SECOND)
-                .ruleType(RuleBuilder.RuleType.SAMPLE)
-                .when(thisSampleColumn(Sample.PROJECT).isEqualTo("PROJ"))
                 .and(thisSampleColumn(Sample.ID).matchesRegex("123"))
-                .then(setFieldValueColumn(Sample.ID).asInvalid().withMessage("For sample id 123 with project PROJ"))
+                .when(thisSampleColumn(Sample.PROJECT).isEqualTo("PROJ"))
+                .then(setFieldValueColumn(Sample.ID).asIgnored().withMessage("Sample project is PROJ and Id has 123"))
                 .buildRule();
     }
 
-    public static Rule defaultRule() {
+    public static Rule createRuleDefaultEmpty() {
         return new RuleBuilder()
-                .description("Global rule to set gender to default hello kitty")
+                .description("Sample Rule: if gender not set default to hello kitty")
                 .priority(Priority.GLOBAL_RULE.ordinal())
-                .ruleType(RuleBuilder.RuleType.SAMPLE)
                 .bin(Bin.FIRST)
                 .when(thisSampleColumn(Sample.GENDER).isEmpty())
-                .then(setFieldValueColumn(Sample.GENDER).withValue("Hello Kitty"))
+                .then(setFieldValueColumn(Sample.GENDER).asDefaulted().withValue("Kitty").withMessage("Default empty gender to Hello Kitty"))
                 .buildRule();
 
     }
 
-    public static Rule requiredRule() {
+    public static Rule createRuleRequired() {
         return new RuleBuilder()
-                .description("Panel rule Require that DNA source for panel 'PANEL'")
+                .description("Sample Rule: require that DNA source is required for panel 'PANEL'")
                 .priority(Priority.PANEL_RULE.ordinal())
-                .ruleType(RuleBuilder.RuleType.SAMPLE)
                 .bin(Bin.FOURTH)
                 .when(thisSampleColumn(Sample.PANEL).splitColumnValueOnSpace().isEqualTo("PANEL1"))
                 .and(thisSampleColumn(Sample.DNA_SOURCE).isEmpty())
-                .then(setFieldValueColumn(Sample.DNA_SOURCE).withMessage("DNA source is required for panel"))
+                .then(setFieldValueColumn(Sample.DNA_SOURCE).withMessage("DNA source is required for panel 'PANEL1'"))
                 .buildRule();
     }
 
-    public static Rule equalsRule() {
+    public static Rule createRuleEqualsValueInList() {
         return new RuleBuilder()
                 .description("Panel rule comment is in list'")
-                .ruleType(RuleBuilder.RuleType.SAMPLE)
                 .priority(Priority.PANEL_RULE.ordinal())
                 .bin(Bin.THIRD)
                 .when(thisSampleColumn(Sample.PANEL).splitColumnValueOnSpace().isEqualTo("PANEL2"))
-                .and(thisSampleColumn(Sample.COMMENTS).isNotFoundInList(Arrays.asList("Test", "Tester")))
-                .then(setFieldValueColumn(Sample.COMMENTS).asInvalid().withMessage("Does not contain tester."))
+                .and(thisSampleColumn(Sample.GENDER).isNotFoundInList(Arrays.asList("Male", "Female")))
+                .then(setFieldValueColumn(Sample.COMMENTS).asInvalid().withMessage("Panel2 gender is not Male or Female."))
+                .buildRule();
+    }
+
+    public static Rule createRuleToAlphabetizePanels() {
+        return new RuleBuilder()
+                .description("Sample Rule: panels in alphabetical order")
+                .priority(Priority.PANEL_RULE.ordinal())
+                .bin(Bin.THIRD)
+                .when(thisSampleColumn(Sample.PANEL).isNotEmpty())
+                .then(alphabetize(Sample.PANEL).and(Sample.PHASE))
+                .and(setFieldValueColumn(Sample.PANEL).asDefaulted().withMessage("Alphabetized Panels"))
+                .buildRule();
+    }
+
+    public static Rule createRuleToUpperCaseGenders(){
+        return new RuleBuilder()
+                .description("Sample Rule: uppercase gender")
+                .when(thisSampleColumn(Sample.GENDER).isNotEmpty())
+                .then(uppercase(Sample.GENDER))
                 .buildRule();
     }
 }

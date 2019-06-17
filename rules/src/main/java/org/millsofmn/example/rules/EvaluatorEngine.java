@@ -1,6 +1,7 @@
 package org.millsofmn.example.rules;
 
-import org.millsofmn.example.rules.form.SampleForm;
+import org.millsofmn.example.rules.rule.Rule;
+import org.millsofmn.example.rules.sample.Form;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,7 @@ public class EvaluatorEngine {
 
     List<Rule> sampleRules = new ArrayList<>();
 
-    public void run(SampleForm form) {
+    public void run(Form form) {
 
         sampleRules.sort(new Rule.RuleComparator());
 

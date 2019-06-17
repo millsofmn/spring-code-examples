@@ -1,13 +1,13 @@
-package org.millsofmn.example.rules;
+package org.millsofmn.example.rules.rule;
 
 import org.millsofmn.example.rules.criteria.Criteria;
-import org.millsofmn.example.rules.form.SampleForm;
+import org.millsofmn.example.rules.sample.Form;
 import org.millsofmn.example.rules.sample.Sample;
 
 public class FormRule extends Rule {
 
-
-    public boolean evaluate(SampleForm form) {
+    @Override
+    public boolean evaluate(Form form) {
         boolean formNotValid = false;
         for (Criteria criterion : criteria) {
             for (Sample sample : form.getSamples()) {

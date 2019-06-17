@@ -2,6 +2,11 @@ package org.millsofmn.example.rules;
 
 import org.millsofmn.example.rules.action.Action;
 import org.millsofmn.example.rules.criteria.Criteria;
+import org.millsofmn.example.rules.criteria.FormCriteria;
+import org.millsofmn.example.rules.criteria.SampleCriteria;
+import org.millsofmn.example.rules.rule.FormRule;
+import org.millsofmn.example.rules.rule.Rule;
+import org.millsofmn.example.rules.rule.SampleRule;
 import org.millsofmn.example.rules.sample.Bin;
 
 import java.util.ArrayList;
@@ -9,20 +14,12 @@ import java.util.List;
 
 public class RuleBuilder {
 
-    enum RuleType {SAMPLE, FORM}
+    private String description = "";
+    private int priority = 10;
+    private Bin bin = Bin.FOURTH;
 
-    RuleType ruleType;
-    String description = "";
-    int priority = 10;
-    Bin bin = Bin.FOURTH;
-
-    List<Criteria> criteria = new ArrayList<>();
-    List<Action> actions = new ArrayList<>();
-
-    public RuleBuilder ruleType(RuleType ruleType) {
-        this.ruleType = ruleType;
-        return this;
-    }
+    private List<Criteria> criteria = new ArrayList<>();
+    private List<Action> actions = new ArrayList<>();
 
     public RuleBuilder description(String description){
         this.description = description;
@@ -62,18 +59,21 @@ public class RuleBuilder {
     }
 
     public Rule buildRule(){
-        Rule formRule;
-        if(ruleType == RuleType.SAMPLE){
-            formRule = new Rule();
+        Rule rule;
+        if(!criteria.isEmpty() && criteria.get(0) instanceof SampleCriteria){
+            rule = new SampleRule();
+        } else if (!criteria.isEmpty() && criteria.get(0) instanceof FormCriteria){
+            rule = new FormRule();
         } else {
-            formRule = new FormRule();
+            throw new UnsupportedOperationException();
         }
-        formRule.setCriteria(criteria);
-        formRule.setActions(actions);
-        formRule.setDescription(description);
-        formRule.setPriority(priority);
-        formRule.setBin(bin);
+        
+        rule.setCriteria(criteria);
+        rule.setActions(actions);
+        rule.setDescription(description);
+        rule.setPriority(priority);
+        rule.setBin(bin);
 
-        return formRule;
+        return rule;
     }
 }

@@ -1,20 +1,20 @@
 package org.millsofmn.example.rules.criteria;
 
-import org.millsofmn.example.rules.criteria.expression.AreNotUnique;
+import org.millsofmn.example.rules.criteria.expression.IsNotUnique;
 import org.millsofmn.example.rules.criteria.expression.Expression;
 import org.millsofmn.example.rules.criteria.expression.IsUnique;
 import org.millsofmn.example.rules.sample.Sample;
 
-public class SampleFormEvaluateCriteria implements Criteria<Sample> {
+public class FormCriteria implements Criteria<Sample> {
 
     private String columnName;
-    private Expression expression;
+    private Expression<String> expression;
 
-    public static SampleFormEvaluateCriteria sampleFormColumn(String columnName) {
-        return new SampleFormEvaluateCriteria(columnName);
+    public static FormCriteria sampleFormColumn(String columnName) {
+        return new FormCriteria(columnName);
     }
 
-    public SampleFormEvaluateCriteria(String columnName) {
+    private FormCriteria(String columnName) {
         this.columnName = columnName;
     }
 
@@ -24,16 +24,15 @@ public class SampleFormEvaluateCriteria implements Criteria<Sample> {
         if(value == null){
             value = "";
         }
-        System.out.println("eval " + value);
         return expression.evaluate(value);
     }
 
-    public SampleFormEvaluateCriteria isNotUnique(){
-        expression = new AreNotUnique();
+    public FormCriteria isNotUnique(){
+        expression = new IsNotUnique();
         return this;
     }
 
-    public SampleFormEvaluateCriteria isUnique(){
+    public FormCriteria hasUniqueValues(){
         expression = new IsUnique();
         return this;
     }

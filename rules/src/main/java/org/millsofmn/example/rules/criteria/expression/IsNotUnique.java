@@ -3,8 +3,9 @@ package org.millsofmn.example.rules.criteria.expression;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AreNotUnique implements Expression<String> {
-    Set<String> uniqueValues = new HashSet<>();
+public class IsNotUnique implements Expression<String> {
+    private Set<String> uniqueValues = new HashSet<>();
+
     @Override
     public boolean evaluate(String value) {
 
