@@ -4,7 +4,6 @@ import org.millsofmn.example.rules.action.Action;
 import org.millsofmn.example.rules.action.FormAction;
 import org.millsofmn.example.rules.criteria.Criteria;
 import org.millsofmn.example.rules.sample.Form;
-import org.millsofmn.example.rules.sample.Bin;
 import org.millsofmn.example.rules.sample.Sample;
 
 import java.util.ArrayList;
@@ -15,17 +14,17 @@ import java.util.StringJoiner;
 public abstract class Rule {
 
     private String description;
-    private Bin bin;
+    private int bin;
     private int priority;
 
     protected List<Criteria> criteria = new ArrayList<>();
     protected List<Action> actions = new ArrayList<>();
 
-    public Bin getBin() {
+    public int getBin() {
         return bin;
     }
 
-    public void setBin(Bin bin) {
+    public void setBin(int bin) {
         this.bin = bin;
     }
 
@@ -89,8 +88,8 @@ public abstract class Rule {
 
             if (comparePriority == 0) {
                 return Integer.compare(
-                        r1.getBin().ordinal(),
-                        r2.getBin().ordinal());
+                        r1.getBin(),
+                        r2.getBin());
             }
             return comparePriority;
         }

@@ -22,6 +22,7 @@ public class SampleCriteria implements Criteria<Sample> {
 
     @Override
     public boolean evaluate(Sample sample) {
+
         if(splitColumnValues){
             List<String> values = Arrays.asList(sample.get(columnName).split("\\s+"));
             for(String val : values){
@@ -47,6 +48,11 @@ public class SampleCriteria implements Criteria<Sample> {
 
     public SampleCriteria isNotEqualTo(String value){
         expression = input -> !input.equalsIgnoreCase(value);
+        return this;
+    }
+
+    public SampleCriteria hasMultipleValues(){
+        expression = input -> input != null && input.contains("\\s+");
         return this;
     }
 

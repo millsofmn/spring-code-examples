@@ -7,7 +7,6 @@ import org.millsofmn.example.rules.criteria.SampleCriteria;
 import org.millsofmn.example.rules.rule.FormRule;
 import org.millsofmn.example.rules.rule.Rule;
 import org.millsofmn.example.rules.rule.SampleRule;
-import org.millsofmn.example.rules.sample.Bin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,7 @@ public class RuleBuilder {
 
     private String description = "";
     private int priority = 10;
-    private Bin bin = Bin.FOURTH;
+    private int bin = 4;
 
     private List<Criteria> criteria = new ArrayList<>();
     private List<Action> actions = new ArrayList<>();
@@ -31,7 +30,7 @@ public class RuleBuilder {
         return this;
     }
 
-    public RuleBuilder bin(Bin bin){
+    public RuleBuilder bin(int bin){
         this.bin = bin;
         return this;
     }

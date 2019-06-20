@@ -5,9 +5,9 @@ import java.util.List;
 
 public class FieldValue {
 
-    private String columnName;
+    private String columnName = "";
 
-    private String cellValue;
+    private String cellValue = "";
 
     private boolean conjugated = false;
 

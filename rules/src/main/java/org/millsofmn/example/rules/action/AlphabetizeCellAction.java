@@ -4,19 +4,19 @@ import org.millsofmn.example.rules.sample.Sample;
 
 import java.util.*;
 
-public class AlphabetizeCellValuesAction implements Action<Sample> {
+public class AlphabetizeCellAction implements Action<Sample> {
 
     private List<String> columnNames = new ArrayList<>();
 
-    public static AlphabetizeCellValuesAction alphabetize(String columnName) {
-        return new AlphabetizeCellValuesAction(columnName);
+    public static AlphabetizeCellAction alphabetize(String columnName) {
+        return new AlphabetizeCellAction(columnName);
     }
 
-    private AlphabetizeCellValuesAction(String columnName) {
+    private AlphabetizeCellAction(String columnName) {
         this.columnNames.add(columnName);
     }
 
-    public AlphabetizeCellValuesAction and(String columnName) {
+    public AlphabetizeCellAction and(String columnName) {
         this.columnNames.add(columnName);
         return this;
     }

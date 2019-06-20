@@ -2,7 +2,6 @@ package org.millsofmn.example.rules;
 
 import org.millsofmn.example.rules.rule.Rule;
 import org.millsofmn.example.rules.sample.Form;
-import org.millsofmn.example.rules.sample.Bin;
 import org.millsofmn.example.rules.sample.Priority;
 import org.millsofmn.example.rules.sample.Sample;
 
@@ -10,9 +9,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.millsofmn.example.rules.action.AlphabetizeCellValuesAction.alphabetize;
+import static org.millsofmn.example.rules.action.AlphabetizeCellAction.alphabetize;
+import static org.millsofmn.example.rules.action.ApplyDefaultPanelAction.findDefaultPanelForProject;
+import static org.millsofmn.example.rules.action.TransformCellAction.transformFieldValueColumn;
 import static org.millsofmn.example.rules.action.SampleAction.setFieldValueColumn;
-import static org.millsofmn.example.rules.action.ColumnValueAction.uppercase;
 import static org.millsofmn.example.rules.criteria.FormCriteria.sampleFormColumn;
 import static org.millsofmn.example.rules.criteria.SampleCriteria.thisSampleColumn;
 
@@ -36,6 +36,7 @@ public class RuleTests {
 
         evaluator.registerRule(createRuleToAlphabetizePanels());
         evaluator.registerRule(createRuleToUpperCaseGenders());
+        evaluator.registerRule(createRuleToSetDefaultPanelForProject());
 
         evaluator.run(form);
 
@@ -81,6 +82,13 @@ public class RuleTests {
         sample3.getPhase().setCellValue("Clinical");
         samples.add(sample3);
 
+        Sample sample4 = new Sample();
+        sample4.getId().setCellValue("SMPL02");
+        sample4.getPlateId().setCellValue("123ABC-De");
+        sample4.getProject().setCellValue("PROJ");
+        sample4.getPhase().setCellValue("Clinical");
+        samples.add(sample4);
+
         return samples;
     }
 
@@ -96,7 +104,7 @@ public class RuleTests {
         return new RuleBuilder()
                 .description("Sample Rule: plate id must not be empty")
                 .priority(Priority.PANEL_RULE.ordinal())
-                .bin(Bin.FOURTH)
+                .bin(4)
                 .when(thisSampleColumn(Sample.PLATE_ID).isEmpty())
                 .then(setFieldValueColumn(Sample.PLATE_ID).asValid().withMessage("Plate id cannot be left empty."))
                 .buildRule();
@@ -106,7 +114,7 @@ public class RuleTests {
         return new RuleBuilder()
                 .description("Form Rule: all sample ids must be unique")
                 .priority(Priority.PANEL_RULE.ordinal())
-                .bin(Bin.FOURTH)
+                .bin(4)
                 .when(sampleFormColumn(Sample.ID).isNotUnique())
                 .then(setFieldValueColumn(Sample.ID).asInvalid().withMessage("Sample ids must be unique."))
                 .buildRule();
@@ -116,7 +124,7 @@ public class RuleTests {
         return new RuleBuilder()
                 .description("Sample Rule: project is equal to PROJ and Id has 123")
                 .priority(Priority.PROJECT_RULE.ordinal())
-                .bin(Bin.SECOND)
+                .bin(2)
                 .and(thisSampleColumn(Sample.ID).matchesRegex("123"))
                 .when(thisSampleColumn(Sample.PROJECT).isEqualTo("PROJ"))
                 .then(setFieldValueColumn(Sample.ID).asIgnored().withMessage("Sample project is PROJ and Id has 123"))
@@ -127,7 +135,7 @@ public class RuleTests {
         return new RuleBuilder()
                 .description("Sample Rule: if gender not set default to hello kitty")
                 .priority(Priority.GLOBAL_RULE.ordinal())
-                .bin(Bin.FIRST)
+                .bin(1)
                 .when(thisSampleColumn(Sample.GENDER).isEmpty())
                 .then(setFieldValueColumn(Sample.GENDER).asDefaulted().withValue("Kitty").withMessage("Default empty gender to Hello Kitty"))
                 .buildRule();
@@ -138,7 +146,7 @@ public class RuleTests {
         return new RuleBuilder()
                 .description("Sample Rule: require that DNA source is required for panel 'PANEL'")
                 .priority(Priority.PANEL_RULE.ordinal())
-                .bin(Bin.FOURTH)
+                .bin(4)
                 .when(thisSampleColumn(Sample.PANEL).splitColumnValueOnSpace().isEqualTo("PANEL1"))
                 .and(thisSampleColumn(Sample.DNA_SOURCE).isEmpty())
                 .then(setFieldValueColumn(Sample.DNA_SOURCE).withMessage("DNA source is required for panel 'PANEL1'"))
@@ -149,7 +157,7 @@ public class RuleTests {
         return new RuleBuilder()
                 .description("Panel rule comment is in list'")
                 .priority(Priority.PANEL_RULE.ordinal())
-                .bin(Bin.THIRD)
+                .bin(3)
                 .when(thisSampleColumn(Sample.PANEL).splitColumnValueOnSpace().isEqualTo("PANEL2"))
                 .and(thisSampleColumn(Sample.GENDER).isNotFoundInList(Arrays.asList("Male", "Female")))
                 .then(setFieldValueColumn(Sample.COMMENTS).asInvalid().withMessage("Panel2 gender is not Male or Female."))
@@ -160,8 +168,8 @@ public class RuleTests {
         return new RuleBuilder()
                 .description("Sample Rule: panels in alphabetical order")
                 .priority(Priority.PANEL_RULE.ordinal())
-                .bin(Bin.THIRD)
-                .when(thisSampleColumn(Sample.PANEL).isNotEmpty())
+                .bin(3)
+                .when(thisSampleColumn(Sample.PANEL).hasMultipleValues())
                 .then(alphabetize(Sample.PANEL).and(Sample.PHASE))
                 .and(setFieldValueColumn(Sample.PANEL).asDefaulted().withMessage("Alphabetized Panels"))
                 .buildRule();
@@ -169,9 +177,21 @@ public class RuleTests {
 
     public static Rule createRuleToUpperCaseGenders(){
         return new RuleBuilder()
-                .description("Sample Rule: uppercase gender")
+                .description("Sample Rule: uppercaseColumnValue gender")
                 .when(thisSampleColumn(Sample.GENDER).isNotEmpty())
-                .then(uppercase(Sample.GENDER))
+                .then(transformFieldValueColumn(Sample.GENDER).toUppercase())
+                .buildRule();
+    }
+
+    public static Rule createRuleToSetDefaultPanelForProject(){
+        return new RuleBuilder()
+                .description("Sample Rule: set default panel when missing")
+                .priority(Priority.SAMPLE.ordinal())
+                .when(thisSampleColumn(Sample.PROJECT).isNotEmpty())
+                .and(thisSampleColumn(Sample.PANEL).isEmpty())
+                .then(findDefaultPanelForProject(Sample.PROJECT).andSetValueInColumn(Sample.PANEL)
+                        .ifFound(setFieldValueColumn(Sample.PANEL)
+                                .asDefaulted().withMessage("Default panel value set.")))
                 .buildRule();
     }
 }

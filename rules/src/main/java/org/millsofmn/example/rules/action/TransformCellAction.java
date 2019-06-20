@@ -2,31 +2,27 @@ package org.millsofmn.example.rules.action;
 
 import org.millsofmn.example.rules.sample.Sample;
 
-public class ColumnValueAction implements Action<Sample> {
+public class TransformCellAction implements Action<Sample> {
 
     private String columnName;
     private Action action;
 
-    public static ColumnValueAction uppercase(String columnName){
-        return new ColumnValueAction(columnName).toUppercase();
+    public static TransformCellAction transformFieldValueColumn(String columnName){
+        return new TransformCellAction(columnName);
     }
 
-    public static ColumnValueAction lowercase(String columnName){
-        return new ColumnValueAction(columnName).toLowercase();
-    }
-
-    private ColumnValueAction(String columnName) {
+    private TransformCellAction(String columnName) {
         this.columnName = columnName;
     }
 
-    private ColumnValueAction toUppercase(){
+    public TransformCellAction toUppercase(){
         action = (Action<Sample>) sample -> sample.getFieldValue(columnName).setCellValue(
                 sample.getFieldValue(columnName).getCellValue().toUpperCase()
         );
         return this;
     }
 
-    private ColumnValueAction toLowercase(){
+    public TransformCellAction toLowercase(){
         action = (Action<Sample>) sample -> sample.getFieldValue(columnName).setCellValue(
                 sample.getFieldValue(columnName).getColumnName().toLowerCase()
         );
